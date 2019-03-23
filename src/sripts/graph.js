@@ -73,7 +73,7 @@ export function Graph(elem) {
             },
         };
     }
-    this._setSize(this._root);
+    this._setSize();
     this._html = document.createElement('div');
     this._html.className = 'graphMain';
     preventSelection(this._html);
