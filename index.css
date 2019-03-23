@@ -1,25 +1,46 @@
 .main {
     margin: auto;
 }
+.switchGraph {
+    margin: auto;
+}
 @media (max-height: 1000px) {
     .main {
-        height: 95vh;
+        height: 80vh;
+    }
+
+    .switchGraph {
+        height: 15vh;
     }
 }
+
 @media (min-height:1000px) {
-  .main {
-        height: 1000px;
+    .main {
+        height: 800px;
+    }
+    .switchGraph {
+        height: 150px;
     }
 }
 
 @media (max-width: 1000px) {
-  .main {
-    width:100%;
+    .main {
+        width: 100%;
+    }
+    .switchGraph {
+        width: 90%;
     }
 }
 
 @media (min-width: 1000px) {
-  .main {
-        width:1000px;
+    .main {
+        width: 1000px;
     }
+    .switchGraph {
+        width: 900px;
+    }
+}
+.switcher{
+    display: inline-block;
+    margin:auto;
 }

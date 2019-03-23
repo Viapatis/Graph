@@ -72,7 +72,7 @@
 .switchButton{
     border:2px solid;
     border-radius: 50%;
-    margin:1vh 0 1vh 1vh;
+    margin:0.3vh 0 1vh 1vh;
     outline: 0 !important;
     padding: auto;
     width:4vh;
@@ -113,5 +113,5 @@
     height: 3vh;
     width:29vh;
     font-size: 2.5vh;
-    margin:5% auto;
+    margin:2% auto 2% auto;
 }

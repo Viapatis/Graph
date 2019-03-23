@@ -5,50 +5,41 @@ export function Graph(elem) {
         this._width = elem.clientWidth * 0.9;
         this._height = elem.clientHeight * 0.7;
         this._offsetX = this._root.offsetLeft + elem.clientWidth * 0.05;
-        this._colorStyle = {
-                'day': {
-                    'background': 'white',
-                    'color': 'black'
+        this._mode = 'day';
+        this._graph = {
+            'YScale': {
+                'min': 0,
+                'max': this._width,
+                'incriment': 50,
+                'height': this._height * 0.63,
+                'axis': {
+                    'numberDevision': 5,
+                    'textY': [],
+                    'axis': null
+                }
+
+            },
+            'XScale': {
+                'min': 0,
+                'max': 20,
+                'incriment': 50,
+                'width': this._width,
+                'axis': {
+                    'numberDevision': 5,
+                    'textX': [],
+                    'axis': null
                 },
-                'night': {
-                    'background': '#282e33',
-                    'color': 'white'
+                'height': this._height * 0.07
+            },
+            'html': '',
+            'chart': {
+                'line': {
+                    'strokeWidth': this._width * this._height * 0.00001
                 }
             },
-            this._graph = {
-                'YScale': {
-                    'min': 0,
-                    'max': this._width,
-                    'incriment': 50,
-                    'height': this._height * 0.63,
-                    'axis': {
-                        'numberDevision': 5,
-                        'textY': [],
-                        'axis': null
-                    }
-
-                },
-                'XScale': {
-                    'min': 0,
-                    'max': 20,
-                    'incriment': 50,
-                    'width': this._width,
-                    'axis': {
-                        'numberDevision': 5,
-                        'textX': [],
-                        'axis': null
-                    },
-                    'height': this._height * 0.07
-                },
-                'html': '',
-                'chart': {
-                    'line': {
-                        'strokeWidth': this._width * this._height * 0.00001
-                    }
-                },
-                'width': this._width,
-                'height': this._height * 0.7
-            }
+            'width': this._width,
+            'height': this._height * 0.7
+        }
 
         this._scroll = {
             'XScale': {
@@ -98,8 +89,8 @@ export function Graph(elem) {
         graphTitle.innerHTML = 'Graph name';
         const themeButton = document.createElement('a');
         themeButton.className = 'themeButton';
-        themeButton.value = 'day';
-        themeButton.innerHTML = 'Switch to Night Mode';
+        themeButton.value = this._mode;
+        themeButton.innerHTML = this._mode==='day'?'Switch to Night Mode':'Switch to Day Mode';
         themeButton.onclick = this._clickThemeButton;
         graph.html = this.createSvg('svg', {
             'class': 'graph',
@@ -205,6 +196,8 @@ export function Graph(elem) {
         this._scroll.minBufferSize = Math.floor((this.formatX.length - 1) / 10);
         this._graph.XScale.max = this._scroll.minBufferSize;
         this._scroll.XScale.max = this.formatX.length;
+        this._graph.XScale.min = 0;
+        this._scroll.XScale.min = 0;
     };
 
     this.rendering = function () {
@@ -243,8 +236,8 @@ export function Graph(elem) {
         if (event.target.className.baseVal === 'changeBuffer') {
             const offsetX = ('targetTouches' in event) ? event.targetTouches[0].clientX - this._offsetX : event.clientX - this._offsetX;
             const position = offsetX / this._scroll.XScale.width * (this._scroll.XScale.max - this._scroll.XScale.min);
-            if (position > (this._graph.XScale.max - this._scroll.changeBuffersize*2-2) || position < (this._graph.XScale.min + this._scroll.changeBuffersize + 1)) {
-                this._scroll.eventIndicator.changeBuffer.side = (position + this._scroll.changeBuffersize*2 < this._graph.XScale.max) ? 0 : 1;
+            if (position > (this._graph.XScale.max - this._scroll.changeBuffersize * 2 - 2) || position < (this._graph.XScale.min + this._scroll.changeBuffersize + 1)) {
+                this._scroll.eventIndicator.changeBuffer.side = (position + this._scroll.changeBuffersize * 2 < this._graph.XScale.max) ? 0 : 1;
             } else {
                 this._scroll.eventIndicator[event.target.className.baseVal].down = false;
             }
@@ -299,17 +292,26 @@ export function Graph(elem) {
         };
     }
     this._clickThemeButton = event => {
+        const root = document.getElementsByClassName('root')[0];
         if (event.target.value === 'day') {
             event.target.innerHTML = 'Switch to Day Mode';
+            this._mode='night';
             event.target.value = 'night';
+            if (root.className.match('day')) {
+                root.className = root.className.replace('day', 'night');
+            } else {
+                root.className += ' night';
+            }
             if (this._html.className.match('day')) {
                 this._html.className = this._html.className.replace('day', 'night');
             } else {
                 this._html.className += ' night';
             }
         } else if (event.target.value === 'night') {
+            this._mode='day';
             event.target.value = 'day';
             event.target.innerHTML = 'Switch to Night Mode';
+            root.className = root.className.replace('night', 'day');
             this._html.className = this._html.className.replace('night', 'day');
         }
     }
@@ -332,7 +334,7 @@ export function Graph(elem) {
             if (this._visible[key]) {
                 let points = '';
                 for (let i = XScale.min; i < XScale.max - 1; i++) {
-                    points += `${((i-XScale.min)/ (XScale.max -2- XScale.min)) * XScale.width},${((YScale.max -this._data.columns[j][i+1]) /YScale.max) *YScale.height} `;
+                    points += `${((i-XScale.min)/ (XScale.max -2- XScale.min)) * XScale.width},${((YScale.max -this._data.columns[j][i+1]) /YScale.max) *YScale.height*0.9} `;
                 }
                 const polyline = this.createSvg('polyline', {
                     'points': points,
