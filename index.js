@@ -26,7 +26,7 @@ function createGr(json) {
     root.appendChild(switchGraph);
     json.forEach((item, index) => {
         switchGraph.innerHTML += `<div class ="switcher"><input class ="switchRadio" name="graph" type="radio" value="${index}"><span>Graph ${index+1}</span></div>`;
-    })
+    });
     const graph = new Graph(main);
     graph.setData(json[0]);
     graph.rendering();
