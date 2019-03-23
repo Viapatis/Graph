@@ -1,8 +1,8 @@
 import {
     Graph
 } from "./src/sripts/graph"
-const url = "https://github.com/Viapatis/Graph/blob/master/package-lock.json";
-fetch(url)
+var request = new Request('https://github.com/Viapatis/Graph/blob/master/package-lock.json');
+fetch(request,{mode: 'cors'})
     .then(function (response) {
         if (response.ok) {
             return response.json();
