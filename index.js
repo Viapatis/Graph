@@ -1,7 +1,7 @@
 import {
     Graph
 } from "./src/sripts/graph"
-var request = new Request('https://github.com/Viapatis/Graph/blob/master/package-lock.json');
+var request = new Request('https://api.myjson.com/bins/13ekc2');
 fetch(request,{mode: 'cors'})
     .then(function (response) {
         if (response.ok) {

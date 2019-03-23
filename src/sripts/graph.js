@@ -1,7 +1,7 @@
 export function Graph(elem) {
     this._root = elem;
     this._visible = {};
-    this._setSize = function (elem) {
+    this._setSize = function () {
         this._width = elem.clientWidth * 0.9;
         this._height = elem.clientHeight * 0.7;
         this._offsetX = this._root.offsetLeft + elem.clientWidth * 0.05;
