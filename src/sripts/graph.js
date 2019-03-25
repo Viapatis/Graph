@@ -1,37 +1,29 @@
 export function Graph(elem) {
     this._root = elem;
     this._visible = {};
-    this._setSize = function () {
-        this._width = elem.clientWidth * 0.9;
-        this._height = elem.clientHeight * 0.7;
-        this._offsetX = this._root.offsetLeft + elem.clientWidth * 0.05;
-        this._mode = 'day';
+    this._graph = {};
+    this._scroll = {};
+    this._mode = 'day';
+    this._setSize = function (start) {
+        this._width = this._root.clientWidth * 0.9;
+        this._height = this._root.clientHeight * 0.7;
+        this._positions = {
+            "offsetLeft": this._root.offsetLeft,
+            "clientWidth": this._root.clientWidth,
+            "clientHeight": this._root.clientHeight
+        };
+        this._offsetX = this._root.offsetLeft + this._root.clientWidth * 0.05;
         this._graph = {
+            ...this._graph,
             'YScale': {
-                'min': 0,
-                'max': this._width,
-                'incriment': 50,
-                'height': this._height * 0.63,
-                'axis': {
-                    'numberDevision': 5,
-                    'textY': [],
-                    'axis': null
-                }
-
+                ...this._graph.YScale,
+                'height': this._height * 0.63
             },
             'XScale': {
-                'min': 0,
-                'max': 20,
-                'incriment': 50,
+                ...this._graph.XScale,
                 'width': this._width,
-                'axis': {
-                    'numberDevision': 5,
-                    'textX': [],
-                    'axis': null
-                },
                 'height': this._height * 0.07
             },
-            'html': '',
             'chart': {
                 'line': {
                     'strokeWidth': this._width * this._height * 0.00001
@@ -42,38 +34,80 @@ export function Graph(elem) {
         }
 
         this._scroll = {
+            ...this._scroll,
             'XScale': {
+                ...this._scroll.XScale,
                 'width': this._width,
-                'min': 0,
-                'max': 300
             },
             'YScale': {
+                ...this._scroll.YScale,
                 'height': this._height * 0.1,
-                'min': 0,
-                'max': 300,
             },
-            'html': '',
-            'eventIndicator': {
-                'back': {
-                    'down': false,
-                    'move': false
-                },
-                'changeBuffer': {
-                    'down': false,
-                    'move': false,
-                    'side': 0
-                }
-            },
-            'minBufferSize': 10,
-            'changeBuffersize': 1,
             'chart': {
                 'line': {
                     'strokeWidth': this._width * 20 * 0.000065
                 }
             },
         };
+        if (start) {
+            this._graph = {
+                ...this._graph,
+                'YScale': {
+                    ...this._graph.YScale,
+                    'min': 0,
+                    'incriment': 50,
+                    'axis': {
+                        'numberDevision': 5,
+                        'textY': [],
+                        'axis': null
+                    }
+
+                },
+                'XScale': {
+                    ...this._graph.XScale,
+                    'min': 0,
+                    'max': 20,
+                    'incriment': 50,
+                    'axis': {
+                        'numberDevision': 5,
+                        'textX': [],
+                        'axis': null
+                    },
+                },
+            }
+
+            this._scroll = {
+                ...this._scroll,
+                'XScale': {
+                    ...this._scroll.XScale,
+                    'min': 0,
+                    'max': 300
+                },
+                'YScale': {
+                    ...this._scroll.YScale,
+                    'min': 0,
+                    'max': 300,
+                },
+                'eventIndicator': {
+                    'back': {
+                        'down': false,
+                        'move': false
+                    },
+                    'changeBuffer': {
+                        'down': false,
+                        'move': false,
+                        'side': 0
+                    }
+                },
+                'minBufferSize': 10,
+                'changeBuffersize': 1,
+            };
+        }
     }
-    this._setSize();
+    this._setSize(true);
+    window.addEventListener("resize", (event) => {
+        this._checkSize()
+    });
     this._html = document.createElement('div');
     this._html.className = 'graphMain';
     preventSelection(this._html);
@@ -90,7 +124,7 @@ export function Graph(elem) {
         const themeButton = document.createElement('a');
         themeButton.className = 'themeButton';
         themeButton.value = this._mode;
-        themeButton.innerHTML = this._mode==='day'?'Switch to Night Mode':'Switch to Day Mode';
+        themeButton.innerHTML = this._mode === 'day' ? 'Switch to Night Mode' : 'Switch to Day Mode';
         themeButton.onclick = this._clickThemeButton;
         graph.html = this.createSvg('svg', {
             'class': 'graph',
@@ -158,7 +192,27 @@ export function Graph(elem) {
     };
 
     this._data;
-
+    this._checkSize = (event) => {
+        for (let key in this._positions) {
+            if (this._root[key] != this._positions[key]) {
+                const back = this._html.getElementsByClassName('back')[0];
+                const roller = this._html.getElementsByClassName('roller')[0];
+                this._setSize(false);
+                const dy = this._graph.YScale.height / (this._graph.YScale.axis.numberDevision + 1);
+                let y = '';
+                for (let i = 1; i < this._graph.YScale.axis.numberDevision + 1; i++) {
+                    y += `M0,${i* dy} ${this._graph.XScale.width},${i* dy} `;
+                }
+                const frame = `M0,0 ${this._scroll.XScale.width},0 ${this._scroll.XScale.width},${this._scroll.YScale.height} 0,${this._scroll.YScale.height}Z`;
+                back.setAttributeNS(null, 'd', frame);
+                roller.setAttributeNS(null, 'd', frame);
+                this._graph.YScale.axis.axis.setAttributeNS(null, 'd', y);
+                this._clearGraph(this._scroll.html, this._graph.html);
+                this._renderRoller();
+                this._drow();
+            }
+        }
+    }
     this._renderRoller = function () {
         const roller = this._html.getElementsByClassName('roller')[0];
         const changeBuffer = this._html.getElementsByClassName('changeBuffer')[0];
@@ -295,7 +349,7 @@ export function Graph(elem) {
         const root = document.getElementsByClassName('root')[0];
         if (event.target.value === 'day') {
             event.target.innerHTML = 'Switch to Day Mode';
-            this._mode='night';
+            this._mode = 'night';
             event.target.value = 'night';
             if (root.className.match('day')) {
                 root.className = root.className.replace('day', 'night');
@@ -308,7 +362,7 @@ export function Graph(elem) {
                 this._html.className += ' night';
             }
         } else if (event.target.value === 'night') {
-            this._mode='day';
+            this._mode = 'day';
             event.target.value = 'day';
             event.target.innerHTML = 'Switch to Night Mode';
             root.className = root.className.replace('night', 'day');
