@@ -1,16 +1,15 @@
 .main {
     margin: auto;
 }
-.switchGraph {
-    margin: auto;
-}
-@media (max-height: 1000px) {
-    .main {
-        height: 80vh;
-    }
 
-    .switchGraph {
-        height: 15vh;
+@media (max-height: 350px){
+    .main {
+        height: 350px;
+    }
+}
+@media (min-height: 351px) and (max-height: 1000px){
+    .main {
+        height: 100vh;
     }
 }
 
@@ -18,17 +17,11 @@
     .main {
         height: 800px;
     }
-    .switchGraph {
-        height: 150px;
-    }
 }
 
 @media (max-width: 1000px) {
     .main {
         width: 100%;
-    }
-    .switchGraph {
-        width: 90%;
     }
 }
 
@@ -36,11 +29,4 @@
     .main {
         width: 1000px;
     }
-    .switchGraph {
-        width: 900px;
-    }
-}
-.switcher{
-    display: inline-block;
-    margin:auto;
 }

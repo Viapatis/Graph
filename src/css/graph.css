@@ -72,23 +72,21 @@
 .switchButton{
     border:2px solid;
     border-radius: 50%;
-    margin:1vh 0 1vh 5%;
+    margin:2px 0 1px 5%;
     outline: 0 !important;
-    padding: auto;
-    font-size: 1.5vh;
-    width:3vh;
-    height: 60%;
+    font-size:10px;
+    width:20px;
+    height: 20px;
 }
 .switch{
     border:1px solid gray;
     border-radius: 30px;
-    height: 30%;
+    height: 25px;
     width: 35%;
     margin: 2% 7% 0 0;
     display: inline-block;
 }
 .switch>span{
-    font-size:1.5vh;
     margin:auto;
 }
 .switchButton[value="true"]{
@@ -111,8 +109,8 @@
 }
 .themeButton{
     display: block;
-    height: 3vh;
-    width:29vh;
-    font-size: 2.5vh;
-    margin:2% auto 2% auto;
+    height: 6vh;
+    width:50vh;
+    font-size: 5vh;
+    margin:1.5% auto 0.5% auto;
 }

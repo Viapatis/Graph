@@ -347,26 +347,36 @@ export function Graph(elem) {
     }
     this._clickThemeButton = event => {
         const root = document.getElementsByClassName('root')[0];
+        const graphMains = document.getElementsByClassName('graphMain');
+        const themeButtons = document.getElementsByClassName('themeButton');
         if (event.target.value === 'day') {
-            event.target.innerHTML = 'Switch to Day Mode';
-            this._mode = 'night';
-            event.target.value = 'night';
+            for (var i = 0; i < themeButtons.length; i++) {
+                themeButtons[i].innerHTML = 'Switch to Day Mode';
+                themeButtons[i].value='night';
+            }
             if (root.className.match('day')) {
                 root.className = root.className.replace('day', 'night');
             } else {
                 root.className += ' night';
             }
             if (this._html.className.match('day')) {
-                this._html.className = this._html.className.replace('day', 'night');
+                for (var i = 0; i < graphMains.length; i++) {
+                    graphMains[i].className =  graphMains[i].className.replace('day', 'night');;
+                }
             } else {
-                this._html.className += ' night';
+                for (var i = 0; i < graphMains.length; i++) {
+                    graphMains[i].className += ' night';
+                }
             }
         } else if (event.target.value === 'night') {
-            this._mode = 'day';
-            event.target.value = 'day';
-            event.target.innerHTML = 'Switch to Night Mode';
+            for (var i = 0; i < themeButtons.length; i++) {
+                themeButtons[i].innerHTML = 'Switch to Night Mode';
+                themeButtons[i].value='day';
+            }
             root.className = root.className.replace('night', 'day');
-            this._html.className = this._html.className.replace('night', 'day');
+            for (var i = 0; i < graphMains.length; i++) {
+                graphMains[i].className = graphMains[i].className.replace('night', 'day');
+            }
         }
     }
     this._clickBtn = event => {
