@@ -110,7 +110,11 @@
 .themeButton{
     display: block;
     height: 6vh;
+<<<<<<< HEAD
     width:54vh;
+=======
+    width:50vh;
+>>>>>>> b483ed4d6ddb2eafc2be22e011a3d277cabdee63
     font-size: 4vh;
     margin:1.5% auto 0.5% auto;
 }
