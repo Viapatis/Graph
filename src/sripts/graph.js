@@ -241,12 +241,12 @@ export function Graph(elem) {
         roller.setAttributeNS(null, 'd', `${d[0]} M${rol}Z`);
         changeBuffer.setAttributeNS(null, 'd', change);
     }
-    const MONTH=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    this._formatX = function(element,showYear){
-        var formatX=[];
-        const date=new Date(element);
-        formatX.push(MONTH[date.getMonth()],date.getDate());
-        if(showYear){
+    const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    this._formatX = function (element, showYear) {
+        var formatX = [];
+        const date = new Date(element);
+        formatX.push(MONTH[date.getMonth()], date.getDate());
+        if (showYear) {
             formatX.push(date.getFullYear());
         }
         return formatX.join(' ');
@@ -350,8 +350,8 @@ export function Graph(elem) {
             const name = this._data.names[this._data.columns[j][0]];
             if (this._visible[name]) {
                 for (let i = 0; i < graphs.length; i++) {
-                    const chart=graphs[i].getElementsByClassName('chart')[0];
-                   chart.removeChild(chart.getElementsByClassName(name)[0]);
+                    const chart = graphs[i].getElementsByClassName('chart')[0];
+                    chart.removeChild(chart.getElementsByClassName(name)[0]);
                 }
             }
         };
@@ -470,7 +470,7 @@ export function Graph(elem) {
             if (i) {
                 x += widthText + distance;
                 if (i < count - 1) {
-                    index = Math.round(XScale.min + (x - widthText / 2) * normX)+1;
+                    index = Math.round(XScale.min + (x - widthText / 2) * normX) + 1;
                 } else {
                     x = XScale.width - textSize * 3.2;
                     index = XScale.max - 1;
@@ -485,7 +485,7 @@ export function Graph(elem) {
                 'y': y,
                 'style': `font-size:${textSize}px`
             }))
-            textX[i].textContent = this._formatX(this._data.columns[0][index],false);
+            textX[i].textContent = this._formatX(this._data.columns[0][index], false);
             html.appendChild(textX[i]);
         }
         XScale.textX = textX;
@@ -497,11 +497,11 @@ export function Graph(elem) {
             XScale,
             YScale
         } = scale;
-        let buffer=[]
+        let buffer = []
         for (let i = 1; i < this._data.columns.length; i++) {
-            const key = this._data.names[this._data.columns[i][0]]; 
+            const key = this._data.names[this._data.columns[i][0]];
             if (this._visible[key]) {
-                buffer=buffer.concat(this._data.columns[i].slice(XScale.min+1,XScale.max));
+                buffer = buffer.concat(this._data.columns[i].slice(XScale.min + 1, XScale.max));
             }
         }
         let max = getMaxOfArray(buffer);
@@ -512,12 +512,14 @@ export function Graph(elem) {
             max
         };
     };
+
     function getMaxOfArray(numArray) {
         return Math.max.apply(null, numArray);
-      }
-      function getMinOfArray(numArray) {
+    }
+
+    function getMinOfArray(numArray) {
         return Math.min.apply(null, numArray);
-      }
+    }
     this.createSvg = function (tagName, params) {
         tagName = document.createElementNS('http://www.w3.org/2000/svg', tagName);
         for (let p in params)
