@@ -256,8 +256,6 @@ export function Graph(elem) {
         this._data = {
             ...data
         };
-        var t1=new Date();
-        console.log('format',new Date()-t1);
         this._scroll.changeBuffersize = Math.floor((data.columns[0].length - 1) / 50);
         this._scroll.minBufferSize = Math.floor((data.columns[0].length - 1) / 10);
         this._graph.XScale.max = this._scroll.minBufferSize;
