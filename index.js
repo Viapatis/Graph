@@ -15,7 +15,6 @@ import {
 //         console.log('There has been a problem with your fetch "operation": ' + error.message);
 //     });
 document.addEventListener('DOMContentLoaded',function(event){
-    console.log('dd');
     createGr(json);
 })
 function createGr(json) {
