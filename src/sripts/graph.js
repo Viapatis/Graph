@@ -271,7 +271,7 @@ export function Graph(elem) {
         this._scroll.XScale.max = data.columns[0].length;
         this._graph.XScale.min = 0;
         this._scroll.XScale.min = 0;
-        this._scroll.addGripArea=10;//this._scroll.minBufferSize/data.columns[0].length*this._graph.XScale.width*0.25;
+        this._scroll.addGripArea=20;//this._scroll.minBufferSize/data.columns[0].length*this._graph.XScale.width*0.25;
         console.log(this._scroll.addGripArea);
     };
 
