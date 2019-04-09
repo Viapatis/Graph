@@ -439,7 +439,7 @@ export function Graph(elem) {
         ];
         const textAxisY = html.getElementsByClassName('textAxisY');
         const textAxisX = html.getElementsByClassName('textAxisX');
-        const textSize = XScale.height * 0.6;
+        const textSize = XScale.height * 0.4;
         for (let i = 0; textAxisX.length; i++) {
             html.removeChild(textAxisX[0]);
         }
