@@ -4,6 +4,7 @@ export function Graph(elem) {
     this._graph = {};
     this._scroll = {};
     this._mode = 'day';
+    this._chart = [];
     this._setSize = function (start) {
         this._width = this._root.clientWidth * 0.9;
         this._height = this._root.clientHeight * 0.7;
@@ -132,6 +133,12 @@ export function Graph(elem) {
         scroll.html = this.createSvg('svg', {
             'class': 'scroll',
         });
+        var chart_gr = this.createSvg('g', {
+            'class': 'chart',
+        });
+        var chart_sc = this.createSvg('g', {
+            'class': 'chart',
+        });
         const roller = this.createSvg('path', {
             'class': 'roller',
             'd': `M0,0 ${scroll.XScale.width},0 ${scroll.XScale.width},${scroll.YScale.height} 0,${scroll.YScale.height}Z`
@@ -165,6 +172,8 @@ export function Graph(elem) {
         graphArea.appendChild(graph.html);
         graphArea.appendChild(scroll.html);
         graph.html.appendChild(axisY);
+        graph.html.appendChild(chart_gr);
+        scroll.html.appendChild(chart_sc);
         scroll.html.appendChild(back);
         scroll.html.appendChild(roller);
         scroll.html.appendChild(changeBuffer);
@@ -340,7 +349,8 @@ export function Graph(elem) {
             const name = this._data.names[this._data.columns[j][0]];
             if (this._visible[name]) {
                 for (let i = 0; i < graphs.length; i++) {
-                    graphs[i].removeChild(graphs[i].getElementsByClassName(name)[0]);
+                    const chart=graphs[i].getElementsByClassName('chart')[0];
+                   chart.removeChild(chart.getElementsByClassName(name)[0]);
                 }
             }
         };
@@ -352,7 +362,7 @@ export function Graph(elem) {
         if (event.target.value === 'day') {
             for (var i = 0; i < themeButtons.length; i++) {
                 themeButtons[i].innerHTML = 'Switch to Day Mode';
-                themeButtons[i].value='night';
+                themeButtons[i].value = 'night';
             }
             if (root.className.match('day')) {
                 root.className = root.className.replace('day', 'night');
@@ -361,7 +371,7 @@ export function Graph(elem) {
             }
             if (this._html.className.match('day')) {
                 for (var i = 0; i < graphMains.length; i++) {
-                    graphMains[i].className =  graphMains[i].className.replace('day', 'night');;
+                    graphMains[i].className = graphMains[i].className.replace('day', 'night');;
                 }
             } else {
                 for (var i = 0; i < graphMains.length; i++) {
@@ -371,7 +381,7 @@ export function Graph(elem) {
         } else if (event.target.value === 'night') {
             for (var i = 0; i < themeButtons.length; i++) {
                 themeButtons[i].innerHTML = 'Switch to Night Mode';
-                themeButtons[i].value='day';
+                themeButtons[i].value = 'day';
             }
             root.className = root.className.replace('night', 'day');
             for (var i = 0; i < graphMains.length; i++) {
@@ -393,12 +403,13 @@ export function Graph(elem) {
             XScale,
             YScale
         } = plot;
+        const chart = html.getElementsByClassName('chart')[0];
         for (let j = 1; j < this._data.columns.length; j++) {
             const key = this._data.names[this._data.columns[j][0]];
             if (this._visible[key]) {
                 let points = '';
                 for (let i = XScale.min; i < XScale.max - 1; i++) {
-                    points += `${((i-XScale.min)/ (XScale.max -2- XScale.min)) * XScale.width},${((YScale.max -this._data.columns[j][i+1]) /YScale.max) *YScale.height*0.9} `;
+                    points += `${((i-XScale.min)/ (XScale.max -2- XScale.min)) * XScale.width},${((YScale.max -this._data.columns[j][i+1]) /YScale.max) *YScale.height} `;
                 }
                 const polyline = this.createSvg('polyline', {
                     'points': points,
@@ -407,11 +418,7 @@ export function Graph(elem) {
                     'fill': 'none',
                     'class': key
                 });
-                if (html.children.length) {
-                    html.insertBefore(polyline, html.children[0]);
-                } else {
-                    html.appendChild(polyline);
-                }
+                chart.appendChild(polyline);
             }
         }
     };

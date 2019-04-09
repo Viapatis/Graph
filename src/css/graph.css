@@ -5,7 +5,7 @@
 }
 .scroll {
     width:100% !important;
-    height: 10%;
+    height: 15%;
     display: block;
 }
 .graph{
@@ -113,4 +113,7 @@
     width:54vh;
     font-size: 3.5vh;
     margin:1.5% auto 0.5% auto;
+}
+.chart{
+    height: 100%;
 }
