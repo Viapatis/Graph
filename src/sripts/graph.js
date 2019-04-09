@@ -272,7 +272,6 @@ export function Graph(elem) {
         this._graph.XScale.min = 0;
         this._scroll.XScale.min = 0;
         this._scroll.addGripArea=20;//this._scroll.minBufferSize/data.columns[0].length*this._graph.XScale.width*0.25;
-        console.log(this._scroll.addGripArea);
     };
 
     this.rendering = function () {
@@ -288,6 +287,11 @@ export function Graph(elem) {
     };
 
     this._clickScroll = event => {
+        const {
+            XScale
+        } = this._graph;
+        const norm = XScale.width / (this._data.columns[0].length - 1);
+        this._scroll.eventIndicator.back.initialValue=offsetX-XScale.min*norm;
         this._moveScroll(event);
     }
     this._dawnScroll=event=>{
@@ -311,7 +315,7 @@ export function Graph(elem) {
     this._moveScroll = function (event) {
         const bufferSize = this._graph.XScale.max - this._graph.XScale.min;
         const offsetX = ('targetTouches' in event) ? event.targetTouches[0].clientX - this._offsetX : event.clientX - this._offsetX;
-        let position = Math.floor(offsetX / this._scroll.XScale.width * (this._scroll.XScale.max - this._scroll.XScale.min) - bufferSize / 2);
+        let position = Math.floor((offsetX-this._scroll.eventIndicator.back.initialValue) / this._scroll.XScale.width * (this._scroll.XScale.max - this._scroll.XScale.min));
         if (position + bufferSize > this._scroll.XScale.max) {
             position = this._scroll.XScale.max - bufferSize;
         } else if (position < 0) {
@@ -342,6 +346,7 @@ export function Graph(elem) {
                 this._scroll.eventIndicator.changeBuffer.side = 1;
                 this._scroll.eventIndicator.changeBuffer.down = true;
             } else {
+                this._scroll.eventIndicator.back.initialValue=offsetX-XScale.min*norm;
                 this._scroll.eventIndicator.back.down = true;
             }
         }
