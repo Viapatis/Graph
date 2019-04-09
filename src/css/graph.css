@@ -42,8 +42,8 @@
     padding: 0;
 }
 .roller{
-    fill-opacity: 0.4;
-    fill: gray;
+    fill-opacity: 0.2;
+    fill: rgba(84, 149, 194);
     display: block;
     height: 10%;
     width:100% !important;
@@ -58,8 +58,8 @@
 .changeBuffer{
     width:100% !important;
     height: 10%;
-    fill-opacity: 0.7;
-    fill: gray;
+    fill-opacity: 0.5;
+    fill: rgba(84, 149, 194);
     display: block;
 }
 .axisY{
