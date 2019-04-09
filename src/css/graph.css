@@ -51,7 +51,7 @@
 .back{
     width:100% !important;
     height: 10%;
-    fill-opacity: 0.1;
+    fill-opacity: 0;
     fill: white;
     display: block;
 }

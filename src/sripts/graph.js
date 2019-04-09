@@ -133,10 +133,10 @@ export function Graph(elem) {
         scroll.html = this.createSvg('svg', {
             'class': 'scroll',
         });
-        var chart_gr = this.createSvg('g', {
+        const chart_gr = this.createSvg('g', {
             'class': 'chart',
         });
-        var chart_sc = this.createSvg('g', {
+        const chart_sc = this.createSvg('g', {
             'class': 'chart',
         });
         const roller = this.createSvg('path', {
@@ -161,6 +161,7 @@ export function Graph(elem) {
         });
         graph.YScale.axis.axis = axisY;
         roller.onclick = this._clickScroll;
+        roller.addEventListener('mousedown', this._dawnScroll);
         back.addEventListener('mousedown', this._rollerMouseDown);
         changeBuffer.addEventListener('mousedown', this._rollerMouseDown);
         window.addEventListener('mouseup', this._rollerMouseUp);
@@ -243,7 +244,7 @@ export function Graph(elem) {
     }
     const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     this._formatX = function (element, showYear) {
-        var formatX = [];
+        const formatX = [];
         const date = new Date(element);
         formatX.push(MONTH[date.getMonth()], date.getDate());
         if (showYear) {
@@ -251,17 +252,27 @@ export function Graph(elem) {
         }
         return formatX.join(' ');
     }
+    this._formatY = function (element) {
+        if (element > 1000000) {
+            return (element / 1000000).toFixed(1) + 'M';
+        } else if (element > 1000) {
+            return (element / 1000).toFixed(1) + 'K';
+        }
+        return element;
+    }
     this.setData = function (data) {
         this._html.innerHTML = '';
         this._data = {
             ...data
         };
         this._scroll.changeBuffersize = Math.floor((data.columns[0].length - 1) / 50);
-        this._scroll.minBufferSize = Math.floor((data.columns[0].length - 1) / 10);
+        this._scroll.minBufferSize = Math.floor((data.columns[0].length - 1) / 5);
         this._graph.XScale.max = this._scroll.minBufferSize;
         this._scroll.XScale.max = data.columns[0].length;
         this._graph.XScale.min = 0;
         this._scroll.XScale.min = 0;
+        this._scroll.addGripArea=10;//this._scroll.minBufferSize/data.columns[0].length*this._graph.XScale.width*0.25;
+        console.log(this._scroll.addGripArea);
     };
 
     this.rendering = function () {
@@ -278,6 +289,24 @@ export function Graph(elem) {
 
     this._clickScroll = event => {
         this._moveScroll(event);
+    }
+    this._dawnScroll=event=>{
+        const {
+            XScale
+        } = this._graph;
+        const offsetX = ('targetTouches' in event) ? event.targetTouches[0].clientX - this._offsetX : event.clientX - this._offsetX;
+        const norm = XScale.width / (this._data.columns[0].length - 1);
+        const xStartl = (XScale.min) * norm - this._scroll.addGripArea;
+        const xEndl = (XScale.min + this._scroll.changeBuffersize) * norm + this._scroll.addGripArea;
+        const xStartr = (XScale.max - 1 - this._scroll.changeBuffersize) * norm - this._scroll.addGripArea;
+        const xEndr = (XScale.max - 1) * norm + this._scroll.addGripArea;
+        if (offsetX > xStartl && offsetX < xEndl) {
+            this._scroll.eventIndicator.changeBuffer.side = 0;
+            this._scroll.eventIndicator.changeBuffer.down = true;
+        } else if (offsetX > xStartr && offsetX < xEndr) {
+            this._scroll.eventIndicator.changeBuffer.side = 1;
+            this._scroll.eventIndicator.changeBuffer.down = true;
+        } 
     }
     this._moveScroll = function (event) {
         const bufferSize = this._graph.XScale.max - this._graph.XScale.min;
@@ -296,14 +325,33 @@ export function Graph(elem) {
         this._createAxis();
     }
     this._rollerMouseDown = event => {
-        this._scroll.eventIndicator[event.target.className.baseVal].down = true;
+        const offsetX = ('targetTouches' in event) ? event.targetTouches[0].clientX - this._offsetX : event.clientX - this._offsetX;
+        if (event.target.className.baseVal === 'back') {
+            const {
+                XScale
+            } = this._graph;
+            const norm = XScale.width / (this._data.columns[0].length - 1);
+            const xStartl = (XScale.min) * norm - this._scroll.addGripArea;
+            const xEndl = (XScale.min + this._scroll.changeBuffersize) * norm + this._scroll.addGripArea;
+            const xStartr = (XScale.max - 1 - this._scroll.changeBuffersize) * norm - this._scroll.addGripArea;
+            const xEndr = (XScale.max - 1) * norm + this._scroll.addGripArea;
+            if (offsetX > xStartl && offsetX < xEndl) {
+                this._scroll.eventIndicator.changeBuffer.side = 0;
+                this._scroll.eventIndicator.changeBuffer.down = true;
+            } else if (offsetX > xStartr && offsetX < xEndr) {
+                this._scroll.eventIndicator.changeBuffer.side = 1;
+                this._scroll.eventIndicator.changeBuffer.down = true;
+            } else {
+                this._scroll.eventIndicator.back.down = true;
+            }
+        }
         if (event.target.className.baseVal === 'changeBuffer') {
-            const offsetX = ('targetTouches' in event) ? event.targetTouches[0].clientX - this._offsetX : event.clientX - this._offsetX;
             const position = offsetX / this._scroll.XScale.width * (this._scroll.XScale.max - this._scroll.XScale.min);
             if (position > (this._graph.XScale.max - this._scroll.changeBuffersize * 2 - 2) || position < (this._graph.XScale.min + this._scroll.changeBuffersize + 1)) {
+                this._scroll.eventIndicator.changeBuffer.down = true;
                 this._scroll.eventIndicator.changeBuffer.side = (position + this._scroll.changeBuffersize * 2 < this._graph.XScale.max) ? 0 : 1;
             } else {
-                this._scroll.eventIndicator[event.target.className.baseVal].down = false;
+                this._scroll.eventIndicator.changeBuffer.down = false;
             }
         }
     }
@@ -361,7 +409,7 @@ export function Graph(elem) {
         const graphMains = document.getElementsByClassName('graphMain');
         const themeButtons = document.getElementsByClassName('themeButton');
         if (event.target.value === 'day') {
-            for (var i = 0; i < themeButtons.length; i++) {
+            for (let i = 0; i < themeButtons.length; i++) {
                 themeButtons[i].innerHTML = 'Switch to Day Mode';
                 themeButtons[i].value = 'night';
             }
@@ -371,21 +419,21 @@ export function Graph(elem) {
                 root.className += ' night';
             }
             if (this._html.className.match('day')) {
-                for (var i = 0; i < graphMains.length; i++) {
+                for (let i = 0; i < graphMains.length; i++) {
                     graphMains[i].className = graphMains[i].className.replace('day', 'night');;
                 }
             } else {
-                for (var i = 0; i < graphMains.length; i++) {
+                for (let i = 0; i < graphMains.length; i++) {
                     graphMains[i].className += ' night';
                 }
             }
         } else if (event.target.value === 'night') {
-            for (var i = 0; i < themeButtons.length; i++) {
+            for (let i = 0; i < themeButtons.length; i++) {
                 themeButtons[i].innerHTML = 'Switch to Night Mode';
                 themeButtons[i].value = 'day';
             }
             root.className = root.className.replace('night', 'day');
-            for (var i = 0; i < graphMains.length; i++) {
+            for (let i = 0; i < graphMains.length; i++) {
                 graphMains[i].className = graphMains[i].className.replace('night', 'day');
             }
         }
@@ -453,7 +501,7 @@ export function Graph(elem) {
                 'y': YScale.height * (1 - (i) / (YScale.axis.numberDevision + 1)),
                 'style': `font-size:${textSize}px`
             }))
-            textY[i].textContent = i * YScale.incriment;
+            textY[i].textContent = this._formatY(i * YScale.incriment);
             html.appendChild(textY[i]);
         }
         const widthText = textSize * 3;
