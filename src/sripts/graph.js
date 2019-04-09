@@ -42,7 +42,7 @@ export function Graph(elem) {
             },
             'YScale': {
                 ...this._scroll.YScale,
-                'height': this._height * 0.1,
+                'height': this._height * 0.08,
             },
             'chart': {
                 'line': {
