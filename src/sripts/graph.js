@@ -245,7 +245,7 @@ export function Graph(elem) {
     this._formatX = function(element,showYear){
         var formatX=[];
         const date=new Date(element);
-        formatX.push(date.getDay(),MONTH[date.getMonth()])
+        formatX.push(MONTH[date.getMonth()],date.getDate());
         if(showYear){
             formatX.push(date.getFullYear());
         }
@@ -470,7 +470,7 @@ export function Graph(elem) {
             if (i) {
                 x += widthText + distance;
                 if (i < count - 1) {
-                    index = Math.round(XScale.min + (x - widthText / 2) * normX);
+                    index = Math.round(XScale.min + (x - widthText / 2) * normX)+1;
                 } else {
                     x = XScale.width - textSize * 3.2;
                     index = XScale.max - 1;
