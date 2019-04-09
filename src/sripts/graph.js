@@ -496,24 +496,29 @@ export function Graph(elem) {
             XScale,
             YScale
         } = scale;
-        let max = 0;
-        let min = 0;
+        let buffer=[]
         for (let i = 1; i < this._data.columns.length; i++) {
-            const key = this._data.names[this._data.columns[i][0]];
+            const key = this._data.names[this._data.columns[i][0]]; 
             if (this._visible[key]) {
-                for (let j = XScale.min; j < XScale.max; j++) {
-                    min = min > this._data.columns[i][j] ? this._data.columns[i][j] : min;
-                    max = max < this._data.columns[i][j] ? this._data.columns[i][j] : max;
-                }
+                buffer=buffer.concat(this._data.columns[i].slice(XScale.min+1,XScale.max));
             }
         }
+        console.log(buffer);
+        let max = getMaxOfArray(buffer);
+        let min = getMinOfArray(buffer);
+        console.log(min,max);
         scale.YScale = {
             ...YScale,
             min,
             max
         };
     };
-
+    function getMaxOfArray(numArray) {
+        return Math.max.apply(null, numArray);
+      }
+      function getMinOfArray(numArray) {
+        return Math.min.apply(null, numArray);
+      }
     this.createSvg = function (tagName, params) {
         tagName = document.createElementNS('http://www.w3.org/2000/svg', tagName);
         for (let p in params)
