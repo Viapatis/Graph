@@ -231,7 +231,7 @@ export function Graph(elem) {
         const {
             YScale
         } = this._scroll;
-        const norm = XScale.width / (this.formatX.length - 1);
+        const norm = XScale.width / (this._data.columns[0].length - 1);
         const offsetBuf = norm * this._scroll.changeBuffersize;
         const xStart = (XScale.min + this._scroll.changeBuffersize) * norm;
         const xEnd = (XScale.max - 1 - this._scroll.changeBuffersize) * norm;
@@ -241,24 +241,27 @@ export function Graph(elem) {
         roller.setAttributeNS(null, 'd', `${d[0]} M${rol}Z`);
         changeBuffer.setAttributeNS(null, 'd', change);
     }
-
+    const MONTH=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    this._formatX = function(element,showYear){
+        var formatX=[];
+        const date=new Date(element);
+        formatX.push(date.getDay(),MONTH[date.getMonth()])
+        if(showYear){
+            formatX.push(date.getFullYear());
+        }
+        return formatX.join(' ');
+    }
     this.setData = function (data) {
         this._html.innerHTML = '';
         this._data = {
             ...data
         };
-        this.formatX = data.columns[0].map((element, index) => {
-            return index !== 0 ?
-                new Date(element).toLocaleString('en-US', {
-                    'month': 'short',
-                    'day': 'numeric'
-                }) :
-                element;
-        });
-        this._scroll.changeBuffersize = Math.floor((this.formatX.length - 1) / 50);
-        this._scroll.minBufferSize = Math.floor((this.formatX.length - 1) / 10);
+        var t1=new Date();
+        console.log('format',new Date()-t1);
+        this._scroll.changeBuffersize = Math.floor((data.columns[0].length - 1) / 50);
+        this._scroll.minBufferSize = Math.floor((data.columns[0].length - 1) / 10);
         this._graph.XScale.max = this._scroll.minBufferSize;
-        this._scroll.XScale.max = this.formatX.length;
+        this._scroll.XScale.max = data.columns[0].length;
         this._graph.XScale.min = 0;
         this._scroll.XScale.min = 0;
     };
@@ -484,7 +487,7 @@ export function Graph(elem) {
                 'y': y,
                 'style': `font-size:${textSize}px`
             }))
-            textX[i].textContent = this.formatX[index];
+            textX[i].textContent = this._formatX(this._data.columns[0][index],false);
             html.appendChild(textX[i]);
         }
         XScale.textX = textX;
@@ -503,10 +506,8 @@ export function Graph(elem) {
                 buffer=buffer.concat(this._data.columns[i].slice(XScale.min+1,XScale.max));
             }
         }
-        console.log(buffer);
         let max = getMaxOfArray(buffer);
         let min = getMinOfArray(buffer);
-        console.log(min,max);
         scale.YScale = {
             ...YScale,
             min,
