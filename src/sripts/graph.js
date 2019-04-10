@@ -291,7 +291,7 @@ export function Graph(elem) {
             XScale
         } = this._graph;
         const norm = XScale.width / (this._data.columns[0].length - 1);
-        this._scroll.eventIndicator.back.initialValue=offsetX-XScale.min*norm;
+        this._scroll.eventIndicator.back.initialValue=(XScale.max-XScale.min)/2*norm;
         this._moveScroll(event);
     }
     this._dawnScroll=event=>{
